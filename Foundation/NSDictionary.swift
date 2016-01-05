@@ -167,26 +167,24 @@ public class NSDictionary : NSObject, NSCopying, NSMutableCopying, NSSecureCodin
         self.init(objects: [object], forKeys: [key as! NSObject])
     }
     
-//    public convenience init(dictionary otherDictionary: [NSObject : AnyObject]) {
-//        self.init(dictionary: otherDictionary, copyItems: false)
-//    }
-    
-//    public convenience init(dictionary otherDictionary: [NSObject : AnyObject], copyItems flag: Bool) {
-//        var keys = Array<KeyType>()
-//        var values = Array<AnyObject>()
-//        for key in otherDictionary.keys {
-//            keys.append(key)
-//            var value = otherDictionary[key]
-//            if flag {
-//                if let val = value as? NSObject {
-//                    value = val.copy()
-//                }
-//            }
-//            values.append(value!)
-//        }
-//        self.init(objects: values, forKeys: keys)
-//    }
-    
+    public convenience init(dictionary otherDictionary: [NSObject : AnyObject]) {
+        self.init(dictionary: otherDictionary, copyItems: false)
+    }
+
+    public convenience init(dictionary otherDictionary: [NSObject : AnyObject], copyItems flag: Bool) {
+        var keys = Array<NSObject>()
+        var values = Array<AnyObject>()
+        for (key, value) in otherDictionary {
+            keys.append(key)
+            if flag {
+                values.append(value)
+            } else {
+                values.append(value.copy())
+            }
+        }
+        self.init(objects: values, forKeys: keys)
+    }
+
     public convenience init(objects: [AnyObject], forKeys keys: [NSObject]) {
         let keyBuffer = UnsafeMutablePointer<NSObject>.alloc(keys.count)
         keyBuffer.initializeFrom(keys)

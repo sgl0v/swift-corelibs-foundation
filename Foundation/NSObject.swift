@@ -64,7 +64,7 @@ extension NSMutableCopying {
     }
 }
 
-public class NSObject : NSObjectProtocol {
+public class NSObject : NSObjectProtocol, Equatable, Hashable {
     // Important: add no ivars here. It will subvert the careful layout of subclasses that bridge into CF.    
     
     public init() {
@@ -118,10 +118,7 @@ public class NSObject : NSObjectProtocol {
     public var _cfTypeID: CFTypeID {
         return 0
     }
-}
 
-
-extension NSObject : Equatable, Hashable {
     public var hashValue: Int {
         get {
             return hash
