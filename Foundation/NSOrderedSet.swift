@@ -89,7 +89,13 @@ public class NSOrderedSet : NSObject, NSCopying, NSMutableCopying, NSSecureCodin
 
     public init(objects: UnsafePointer<AnyObject?>, count cnt: Int) {
         _storage = NSMutableSet(objects: objects, count: cnt)
-        _orderedStorage = NSMutableArray(objects: objects, count: cnt)
+        _orderedStorage = NSMutableArray()
+        let buffer = NSArray(objects: objects, count: cnt)
+        for obj in buffer {
+            if _orderedStorage.indexOfObject(obj) == NSNotFound {
+                _orderedStorage.addObject(obj)
+            }
+        }
     }
     
     required public convenience init(arrayLiteral elements: AnyObject...) {
@@ -278,7 +284,7 @@ extension NSOrderedSet {
                 filteredArray.map { return Optional<AnyObject>(($0 as! NSObject).copy()) } :
                 filteredArray.map { return Optional<AnyObject>($0) }
 
-        let cnt = set.count
+        let cnt = range.length
         let buffer = UnsafeMutablePointer<AnyObject?>.alloc(cnt)
         buffer.initializeFrom(optionalArray)
         self.init(objects: buffer, count: cnt)

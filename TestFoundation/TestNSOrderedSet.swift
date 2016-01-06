@@ -24,6 +24,7 @@ class TestNSOrderedSet : XCTestCase {
     static var allTests: [(String, (TestNSOrderedSet) -> () throws -> Void)] {
         return [
             ("test_BasicConstruction", test_BasicConstruction),
+            ("test_ConvenienceInitializers", test_convenienceInitializers),
             ("test_Enumeration", test_Enumeration),
             ("test_Uniqueness", test_Uniqueness),
             ("test_reversedEnumeration", test_reversedEnumeration),
@@ -62,6 +63,91 @@ class TestNSOrderedSet : XCTestCase {
         let set2 = NSOrderedSet(array: ["foo", "bar"].bridge().bridge())
         XCTAssertEqual(set.count, 0)
         XCTAssertEqual(set2.count, 2)
+    }
+
+    func test_convenienceInitializers() {
+        class NSOrderedSetEntry: NSObject {
+            private override func copy() -> AnyObject {
+                return NSOrderedSetEntry()
+            }
+        }
+
+        // initWithObject
+        let object = NSObject()
+        let orderedSet1 = NSOrderedSet(object: object)
+        XCTAssertEqual(orderedSet1.count, 1)
+        XCTAssertNotEqual(orderedSet1.indexOfObject(object), NSNotFound)
+        XCTAssertTrue(orderedSet1.set.contains(object))
+
+        // initWithOrderedSet
+        let arrayWithDuplicates = [11, 120, 215, 11, 1, -22, 35, -89, 65].map({ return NSNumber(int: $0) })
+        let orderedSet2 = NSOrderedSet(array: arrayWithDuplicates)
+        let orderedSet3 = NSOrderedSet(orderedSet: orderedSet2)
+        XCTAssertEqual(orderedSet3, orderedSet2)
+
+        // initWithOrderedSet:copyItems:
+        let orderedSet4 = NSOrderedSet(orderedSet: orderedSet3, copyItems: true)
+        XCTAssertEqual(orderedSet4, orderedSet2)
+
+        let array2 = [NSOrderedSetEntry(), NSOrderedSetEntry(), NSOrderedSetEntry()]
+        let orderedSet5 = NSOrderedSet(array: array2)
+        let orderedSet6 = NSOrderedSet(orderedSet: orderedSet5, copyItems: true)
+        XCTAssertEqual(orderedSet5.count, orderedSet6.count)
+        XCTAssertNotEqual(orderedSet5, orderedSet6)
+
+        // initWithOrderedSet:range:copyItems:
+        let range = NSMakeRange(2, 3)
+        let orderedSet7 = NSOrderedSet(orderedSet: orderedSet2, range: range, copyItems: true)
+        XCTAssertEqual(orderedSet7.count, range.length)
+
+        // initWithSet:
+        let set1 = NSSet(array: ["foo", "bar", "baz"].bridge().bridge())
+        let orderedSet8 = NSOrderedSet(set: set1.bridge())
+        XCTAssertEqual(orderedSet8.count, set1.count)
+        XCTAssertEqual(orderedSet8.array.bridge(), set1.allObjects.bridge())
+        XCTAssertEqual(orderedSet8.set.bridge(), set1)
+
+        // initWithSet:copyItems:
+        let orderedSet9 = NSOrderedSet(set: set1.bridge(), copyItems: true)
+        XCTAssertEqual(orderedSet9.count, set1.count)
+        XCTAssertEqual(orderedSet9.array.bridge(), set1.allObjects.bridge())
+        XCTAssertEqual(orderedSet9.set.bridge(), set1)
+
+        let set2 = NSSet(array: [NSOrderedSetEntry(), NSOrderedSetEntry()])
+        let orderedSet10 = NSOrderedSet(set: set2.bridge(), copyItems: true)
+        XCTAssertEqual(orderedSet10.count, set2.count)
+        XCTAssertNotEqual(orderedSet10.array.bridge(), set2.allObjects.bridge())
+        XCTAssertNotEqual(orderedSet10.set.bridge(), set2)
+
+        // initWithArray:
+        let set = NSSet(array: arrayWithDuplicates)
+        let arrayWithoutDuplicates = set.allObjects
+        let orderedSet11 = NSOrderedSet(array: arrayWithoutDuplicates)
+        XCTAssertEqual(orderedSet11.count, set.count)
+        XCTAssertEqual(orderedSet11.array.bridge(), arrayWithoutDuplicates.bridge())
+        XCTAssertEqual(orderedSet11.set.bridge(), set)
+
+        // initWithArray:copyItems:
+        let orderedSet12 = NSOrderedSet(array: arrayWithoutDuplicates, copyItems: true)
+        XCTAssertEqual(orderedSet12.count, set.count)
+        XCTAssertEqual(orderedSet12.array.bridge(), arrayWithoutDuplicates.bridge())
+        XCTAssertEqual(orderedSet12.set.bridge(), set)
+
+        let orderedSet13 = NSOrderedSet(array: array2, copyItems: true)
+        XCTAssertEqual(orderedSet13.count, array2.count)
+        XCTAssertNotEqual(orderedSet13.array.bridge(), array2.bridge())
+        XCTAssertNotEqual(orderedSet13.set.bridge(), NSSet(array: array2))
+
+        // initWithArray:range:copyItems:
+        let orderedSet14 = NSOrderedSet(array: arrayWithDuplicates, range: NSMakeRange(0, 0), copyItems: true)
+        XCTAssertEqual(orderedSet14.count, 0)
+        XCTAssertTrue(orderedSet14.array.isEmpty)
+        XCTAssertTrue(orderedSet14.set.isEmpty)
+
+        let orderedSet15 = NSOrderedSet(array: arrayWithDuplicates, range: NSMakeRange(2, 3), copyItems: true)
+        XCTAssertEqual(orderedSet15.count, 3)
+        XCTAssertEqual(orderedSet15.array.bridge(), arrayWithDuplicates.bridge().subarrayWithRange(range).bridge())
+        XCTAssertEqual(orderedSet15.set.bridge(), NSSet(array: arrayWithDuplicates.bridge().subarrayWithRange(range)))
     }
 
     func test_Enumeration() {
