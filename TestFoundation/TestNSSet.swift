@@ -27,7 +27,11 @@ class TestNSSet : XCTestCase {
             ("testInitWithSet", testInitWithSet),
             ("test_enumeration", test_enumeration),
             ("test_sequenceType", test_sequenceType),
-            ("test_setOperations", test_setOperations),
+            ("test_intersectSet", test_intersectSet),
+            ("test_minusSet", test_minusSet),
+            ("test_removeAllObjects", test_removeAllObjects),
+            ("test_unionSet", test_unionSet),
+            ("test_setSet", test_setSet),
             ("test_equality", test_equality),
             ("test_copying", test_copying),
             ("test_mutableCopying", test_mutableCopying),
@@ -81,11 +85,52 @@ class TestNSSet : XCTestCase {
         }
         XCTAssertEqual(res, Set(["foo", "bar", "baz"]))
     }
-    
-    func test_setOperations() {
-        let set = NSMutableSet(array: ["foo", "bar"].bridge().bridge())
-        set.unionSet(["bar".bridge(), "baz".bridge()])
-        XCTAssertTrue(set.isEqualToSet(["foo".bridge(), "bar".bridge(), "baz".bridge()]))
+
+    func test_intersectSet() {
+        let set1 = NSMutableSet(array: ["foo".bridge(), "bar".bridge()])
+        let set2 = NSSet(array: ["bar".bridge(), "baz".bridge()]).bridge()
+        let set3 = NSSet(array: ["bar".bridge()]).bridge()
+        set1.intersectSet(set2)
+        XCTAssertTrue(set1.isEqualToSet(set3))
+        set1.intersectSet(set2)
+        XCTAssertTrue(set1.isEqualToSet(set3))
+    }
+
+    func test_minusSet() {
+        let set1 = NSMutableSet(array: ["foo".bridge(), "bar".bridge()])
+        let set2 = NSSet(array: ["bar".bridge(), "baz".bridge()]).bridge()
+        let set3 = NSSet(array: ["foo".bridge()]).bridge()
+        set1.minusSet(set2)
+        XCTAssertTrue(set1.isEqualToSet(set3))
+        set1.minusSet(set2)
+        XCTAssertTrue(set1.isEqualToSet(set3))
+        set1.minusSet(set3)
+        XCTAssertTrue(set1.count == 0)
+    }
+
+    func test_removeAllObjects() {
+        let set1 = NSMutableSet(array: ["foo", "bar", "baz"].bridge().bridge())
+        set1.removeAllObjects()
+        XCTAssertTrue(set1.count == 0)
+        set1.removeAllObjects()
+        XCTAssertTrue(set1.count == 0)
+    }
+
+    func test_unionSet() {
+        let set1 = NSMutableSet(array: ["foo".bridge(), "bar".bridge()])
+        let set2 = NSSet(array: ["bar".bridge(), "baz".bridge()]).bridge()
+        let set3 = NSSet(array: ["foo".bridge(), "bar".bridge(), "baz".bridge()]).bridge()
+        set1.unionSet(set2)
+        XCTAssertTrue(set1.isEqualToSet(set3))
+        set1.unionSet(NSSet().bridge())
+        XCTAssertTrue(set1.isEqualToSet(set3))
+    }
+
+    func test_setSet() {
+        let set1 = NSMutableSet(array: ["foo".bridge(), "bar".bridge()])
+        let set2 = NSSet(array: ["Rock".bridge(), "Classical".bridge(), "Hip hop".bridge(), "Jazz".bridge()])
+        set1.setSet(set2.bridge())
+        XCTAssertEqual(set1, set2)
     }
 
     func test_equality() {
