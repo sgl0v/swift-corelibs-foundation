@@ -34,15 +34,16 @@ public class NSOrderedSet : NSObject, NSCopying, NSMutableCopying, NSSecureCodin
     }
 
     public func mutableCopyWithZone(_ zone: NSZone) -> AnyObject {
-        NSUnimplemented()
-//        if self.dynamicType === NSOrderedSet.self || self.dynamicType === NSMutableOrderedSet.self {
-//            // always create and return an NSMutableOrderedSet
-//            let mutableOrderedSet = NSMutableOrderedSet()
-//            mutableOrderedSet._storage = self._storage
-//            mutableOrderedSet._orderedStorage = self._orderedStorage
-//            return mutableOrderedSet
-//        }
-//        return NSMutableOrderedSet(array: self.array)
+        if self.dynamicType === NSOrderedSet.self || self.dynamicType === NSMutableOrderedSet.self {
+            // always create and return an NSMutableOrderedSet
+            let mutableOrderedSet = NSMutableOrderedSet()
+            mutableOrderedSet._storage = self._storage
+            mutableOrderedSet._orderedStorage = self._orderedStorage
+            return mutableOrderedSet
+        }
+        let mutableOrderedSet = NSMutableOrderedSet()
+        mutableOrderedSet.addObjectsFromArray(self._orderedStorage.bridge())
+        return mutableOrderedSet
     }
     
     public static func supportsSecureCoding() -> Bool {
