@@ -80,7 +80,7 @@ class TestNSOrderedSet : XCTestCase {
         XCTAssertTrue(orderedSet1.set.contains(object))
 
         // initWithOrderedSet
-        let arrayWithDuplicates = [11, 120, 215, 11, 1, -22, 35, -89, 65].map({ return NSNumber(int: $0) })
+        let arrayWithDuplicates = [11, 120, 215, 11, 1, -22, 35, -89, 65].map({ return NSNumber(value: $0) })
         let orderedSet2 = NSOrderedSet(array: arrayWithDuplicates)
         let orderedSet3 = NSOrderedSet(orderedSet: orderedSet2)
         XCTAssertEqual(orderedSet3, orderedSet2)

@@ -238,7 +238,7 @@ extension NSOrderedSet {
     }
     
     /*@NSCopying*/
-    public var reversedOrderedSet: NSOrderedSet { return NSOrderedSet(array: _storage.reverse()) }
+    public var reversedOrderedSet: NSOrderedSet { return NSOrderedSet(array: _orderedStorage.reversed()) }
     
     // These two methods return a facade object for the receiving ordered set,
     // which acts like an immutable array or set (respectively).  Note that
@@ -334,11 +334,12 @@ extension NSOrderedSet {
                 filteredArray.map { return Optional<AnyObject>($0) }
 
         let cnt = range.length
-        let buffer = UnsafeMutablePointer<AnyObject?>.alloc(cnt)
+
+        let buffer = UnsafeMutablePointer<AnyObject?>(allocatingCapacity: cnt)
         buffer.initializeFrom(optionalArray)
         self.init(objects: buffer, count: cnt)
-        buffer.destroy(cnt)
-        buffer.dealloc(cnt)
+        buffer.deinitialize(count: array.count)
+        buffer.deallocateCapacity(array.count)
     }
 
     public convenience init(set: Set<NSObject>) {
@@ -444,9 +445,9 @@ extension NSMutableOrderedSet {
         if let object = obj as? NSObject {
             _storage.addObject(obj)
             if idx == _orderedStorage.count {
-                _orderedStorage.addObject(obj)
+                _orderedStorage.addObject(object)
             } else {
-                _orderedStorage[idx] = obj
+                _orderedStorage[idx] = object
             }
         }
     }
