@@ -42,6 +42,7 @@ class TestNSOrderedSet : XCTestCase {
             ("test_IsEqualToOrderedSet", test_IsEqualToOrderedSet),
             ("test_Subsets", test_Subsets),
             ("test_ReplaceObject", test_ReplaceObject),
+            ("test_ReplaceObjectsInRange", test_ReplaceObjectsInRange),
             ("test_ExchangeObjects", test_ExchangeObjects),
             ("test_MoveObjects", test_MoveObjects),
             ("test_InserObjects", test_InsertObjects),
@@ -297,6 +298,17 @@ class TestNSOrderedSet : XCTestCase {
         XCTAssertEqual(set[0] as? NSString, "foo")
         XCTAssertEqual(set[1] as? NSString, "123")
         XCTAssertEqual(set[2] as? NSString, "baz")
+    }
+
+    func test_ReplaceObjectsInRange() {
+        let set = NSMutableOrderedSet(arrayLiteral: "monday".bridge(), "tuesday".bridge(), "wednesday".bridge(), "thursday".bridge(), "friday".bridge())
+        set.replaceObjectsInRange(NSMakeRange(0, 2), withObjects: ["saturday".bridge(), "sunday".bridge()], count: 2)
+        XCTAssertEqual(set.count, 5)
+        XCTAssertEqual(set[0] as? NSString, "saturday")
+        XCTAssertEqual(set[1] as? NSString, "sunday")
+        XCTAssertEqual(set[2] as? NSString, "wednesday")
+        XCTAssertEqual(set[3] as? NSString, "thursday")
+        XCTAssertEqual(set[4] as? NSString, "friday")
     }
 
     func test_ExchangeObjects() {

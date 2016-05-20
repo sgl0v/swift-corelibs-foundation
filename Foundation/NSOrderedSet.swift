@@ -114,6 +114,8 @@ public class NSOrderedSet : NSObject, NSCopying, NSMutableCopying, NSSecureCodin
                 _orderedStorage.addObject(obj)
             }
         }
+
+        super.init()
     }
     
     required public convenience init(arrayLiteral elements: AnyObject...) {
